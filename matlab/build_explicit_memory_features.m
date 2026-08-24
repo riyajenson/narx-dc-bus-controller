@@ -1,0 +1,33 @@
+function [features, targets, sampleIndex, featureNames] = ...
+        build_explicit_memory_features(piInput, sensed, piOutput)
+%BUILD_EXPLICIT_MEMORY_FEATURES Create causal, measurable controller inputs.
+
+piInput = double(piInput(:));
+sensed = double(sensed(:));
+piOutput = double(piOutput(:));
+assert(numel(piInput) == numel(sensed) && numel(sensed) == numel(piOutput), ...
+    "Controller signals must have equal lengths.");
+
+shortWindow = 4;
+longWindow = 32;
+firstSample = longWindow + 1;
+sampleIndex = (firstSample:numel(piInput)).';
+n = numel(sampleIndex);
+features = zeros(7, n);
+
+for column = 1:n
+    k = sampleIndex(column);
+    features(:, column) = [ ...
+        piInput(k); ...
+        piInput(k-1); ...
+        piInput(k-2); ...
+        piInput(k) - piInput(k-1); ...
+        mean(piInput(k-shortWindow+1:k)); ...
+        mean(piInput(k-longWindow+1:k)); ...
+        sensed(k)];
+end
+
+targets = piOutput(sampleIndex).';
+featureNames = ["error_k", "error_k_1", "error_k_2", "delta_error", ...
+    "mean_error_4", "mean_error_32", "vdc_sensed"];
+end
