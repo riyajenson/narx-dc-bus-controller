@@ -13,6 +13,13 @@ models/*
 !models/.gitkeep
 results/*
 !results/.gitkeep
+!results/synthetic_lstm_metrics.txt
+!results/synthetic_lstm_prediction_trace.png
+!results/synthetic_lstm_regression.png
+!results/closed_loop_comparison.txt
+!results/closed_loop_comparison.png
+!results/final_simulink_metrics.txt
+!results/final_simulink_voltage.png
 
 # OS/editor files
 .DS_Store
