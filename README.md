@@ -38,9 +38,42 @@ addpath("matlab");
 prepare_dataset;
 train_narx_controller;
 evaluate_narx_controller;
+identify_plant_surrogate;
+prepare_simulink_replay;
 ```
 
 4. Follow [the Simulink integration guide](docs/MATLAB_SIMULINK_GUIDE.md).
+
+Because the original DC-bus plant was not supplied, see the
+[surrogate-plant methodology](docs/SURROGATE_PLANT.md) before making
+closed-loop claims.
+
+The ARX surrogate did not pass free-run validation, so the final demonstration
+uses the documented [Simulink replay workflow](docs/SIMULINK_REPLAY.md).
+
+The original closed-loop NARX accumulated feedback error during replay, and a
+fixed-window explicit-memory MLP could not reconstruct the longer controller
+state. The final candidate is therefore a
+[stateful LSTM controller](docs/LSTM_CONTROLLER.md) that uses recurrent memory
+without predicted-output feedback.
+
+Because the provided data and original plant were insufficient, the working
+proof-of-concept is trained on a fully disclosed
+[synthetic DC-bus environment](docs/SYNTHETIC_DC_BUS.md) with randomized plant
+parameters and disturbances.
+
+## Final result
+
+On 20 unseen closed-loop synthetic scenarios, the LSTM maintained stable DC-bus
+regulation with `0.8491 V` RMSE versus `0.7547 V` for the PI expert. It matched
+peak error closely and reduced mean controller-command variation by about 58%.
+See [the complete results and limitations](docs/RESULTS.md).
+
+Generate the final Simulink benchmark with:
+
+```matlab
+build_final_simulink_benchmark;
+```
 
 ## Model
 
