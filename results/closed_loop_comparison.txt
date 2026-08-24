@@ -1,0 +1,15 @@
+Unseen closed-loop episodes: 20
+Samples per episode: 600
+Physical sample time: 0.01000 s
+Warm-up excluded: 40 samples
+
+PI voltage RMSE: 0.75465638 V
+LSTM voltage RMSE: 0.84909014 V
+PI voltage MAE: 0.35282907 V
+LSTM voltage MAE: 0.46485009 V
+PI mean peak error: 4.44579039 V
+LSTM mean peak error: 4.46193792 V
+PI mean |delta u|: 0.06686539
+LSTM mean |delta u|: 0.02796225
+LSTM RMSE change versus PI: 12.513 %
+Plant disclosure: simplified synthetic first-order DC-bus model.

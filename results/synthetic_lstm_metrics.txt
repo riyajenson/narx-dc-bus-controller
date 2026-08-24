@@ -1,0 +1,7 @@
+Unseen test episodes: 27
+Scored samples: 15120
+Warm-up per episode: 40 samples
+RMSE: 0.40744233
+MAE: 0.25683236
+R-squared: 0.92346764
+Predicted-output feedback: false
