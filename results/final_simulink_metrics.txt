@@ -1,0 +1,10 @@
+Model: dc_bus_pi_vs_lstm.slx
+Samples: 601
+PI voltage RMSE: 0.80045643 V
+LSTM voltage RMSE: 0.79509475 V
+PI voltage MAE: 0.40531279 V
+LSTM voltage MAE: 0.41215168 V
+PI peak error: 5.15154337 V
+LSTM peak error: 4.77417744 V
+LSTM RMSE change versus PI: -0.670 %
+Plant disclosure: simplified synthetic first-order DC-bus model.
