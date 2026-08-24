@@ -1,0 +1,20 @@
+# MATLAB generated files
+*.asv
+*.autosave
+slprj/
+codegen/
+*.slxc
+*.mex*
+
+# Generated project artifacts
+data/processed/*
+!data/processed/.gitkeep
+models/*
+!models/.gitkeep
+results/*
+!results/.gitkeep
+
+# OS/editor files
+.DS_Store
+Thumbs.db
+.vscode/
