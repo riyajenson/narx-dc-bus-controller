@@ -47,5 +47,5 @@ free-run score is not sufficient for closed-loop experiments.
 Use: "The controller was evaluated offline on measured simulation data and in
 a closed-loop proof of concept using an identified ARX surrogate."
 
-Do not use: "The NARX controller was validated on the original converter" or
+Do not use: "The AI controller was validated on the original converter" or
 "The controller is ready for hardware."

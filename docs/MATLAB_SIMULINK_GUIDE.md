@@ -5,87 +5,104 @@
 - MATLAB
 - Deep Learning Toolbox
 - Simulink
-- The original DC-bus Simulink model
 
-## 1. Train the controller
+Note: The original DC-bus Simulink plant was not supplied. The project uses a
+disclosed synthetic first-order DC-bus plant for benchmarking.
+
+## 1. Generate synthetic training data
 
 Open MATLAB, browse to the repository root, and run:
 
 ```matlab
 addpath("matlab");
-prepare_dataset;
-train_narx_controller;
-evaluate_narx_controller;
+generate_synthetic_training_data;
 ```
 
 Expected generated files:
 
-- `data/processed/dc_bus_prepared.mat`
-- `models/narx_controller.mat`
-- `results/test_predictions.csv`
-- `results/regression.png`
-- `results/prediction_trace.png`
-- `results/metrics.txt`
+- `data/processed/synthetic_dc_bus_training.mat`
 
-## 2. Confirm the offline result
+This creates 180 randomized episodes of PI expert demonstrations on a
+synthetic first-order DC-bus plant.
+
+## 2. Train the LSTM controller
+
+```matlab
+train_synthetic_lstm_controller;
+```
+
+Expected generated files:
+
+- `models/synthetic_lstm_controller.mat`
+
+## 3. Evaluate offline
+
+```matlab
+evaluate_synthetic_lstm_controller;
+```
+
+Expected generated files:
+
+- `results/synthetic_lstm_metrics.txt`
+- `results/synthetic_lstm_prediction_trace.png`
+- `results/synthetic_lstm_regression.png`
 
 Before using Simulink, check that:
 
 - test RMSE and MAE are acceptably small;
-- test R-squared is close to 1;
-- predicted output follows the measured PI output without obvious lag;
-- the test period was not used for training.
+- test R-squared is positive and close to 1;
+- predicted output follows the expert PI output without obvious lag.
 
 Low imitation error is necessary, but it does not prove closed-loop stability.
 
-## 3. Generate the neural-network Simulink block
-
-Load the trained model:
+## 4. Closed-loop comparison
 
 ```matlab
-load("models/narx_controller.mat", "netClosed");
-gensim(netClosed, 1);
+compare_closed_loop_controllers;
 ```
 
-Replace `1` with the actual controller sample time in seconds. MATLAB will
-generate a Simulink representation of the network. Copy the generated neural
-network block into a new subsystem named `NARX Controller`.
+Expected generated files:
 
-## 4. Connect it safely
+- `results/closed_loop_comparison.txt`
+- `results/closed_loop_comparison.png`
 
-1. Calculate `error = Vdc reference - Vdc sensed`.
-2. Combine `error` and `Vdc sensed` using a Mux block, in that order.
-3. Connect the two-element signal to the NARX block.
-4. Add a Saturation block after the NARX output.
-5. Set lower limit to `-9.33386` and upper limit to `10.0503`.
-6. Connect the saturated output where the original PI output was connected.
-7. Place a Manual Switch before the plant so you can choose PI or NARX.
+This runs PI and LSTM independently in feedback with identical unseen plant
+parameters, reference steps, load disturbances, and measurement noise.
 
-Do not delete the PI block until all comparisons are complete.
+## 5. Build and run the final Simulink benchmark
 
-## 5. Closed-loop tests
+```matlab
+build_final_simulink_benchmark;
+finalOut = sim("dc_bus_pi_vs_lstm");
+summarize_final_simulink_run(finalOut);
+```
 
-Run the PI and NARX controllers under identical conditions:
+Expected generated files:
 
-1. Nominal load.
-2. Sudden load increase.
-3. Sudden load decrease.
-4. Source-voltage or source-power disturbance.
-5. Measurement noise.
-6. Parameter variation, if the model permits it.
+- `simulink/final/dc_bus_pi_vs_lstm.slx`
+- `results/final_simulink_metrics.txt`
+- `results/final_simulink_voltage.png`
 
-Log `Vdc reference`, `Vdc sensed`, controller output, battery current, and time.
+The model contains two parallel control loops (PI expert and LSTM) each
+feeding their own synthetic plant block with identical reference and load
+signals.
 
 ## 6. Final comparison
 
 For both controllers calculate:
 
 - voltage RMSE;
-- maximum overshoot;
-- settling time;
-- steady-state error;
-- integral absolute error;
+- peak error;
+- voltage MAE;
 - control effort and output variation.
 
-The final claim should be that NARX replaces the PI controller only if the
+The final claim should be that the LSTM replaces the PI controller only if the
 closed-loop results remain stable and compare favorably across disturbances.
+
+## Development note
+
+Earlier original-data-only experiments showed that imitation accuracy on logged
+PI output does not automatically produce a reliable closed-loop controller.
+The final workflow therefore trains the LSTM on generated closed-loop episodes
+where the reference, sensed voltage, load disturbance, and PI expert command
+are all available.

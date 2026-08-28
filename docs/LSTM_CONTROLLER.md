@@ -1,11 +1,11 @@
 # Stateful LSTM controller
 
-The LSTM is the final candidate after two diagnostic experiments:
+The LSTM is the final candidate after diagnostic experiments showed that:
 
-- closed-loop NARX failed because prediction errors accumulated through its
-  predicted-output feedback;
 - a fixed-window MLP failed because its bounded window could not reconstruct
   the PI controller's longer internal state.
+- original-data-only sequence training was not enough for closed-loop
+  deployment because the supplied log did not include the full plant state.
 
 The LSTM consumes only `PI Input` and `Vdc Sensed`. Its recurrent hidden state
 provides memory without feeding the predicted controller output back as an

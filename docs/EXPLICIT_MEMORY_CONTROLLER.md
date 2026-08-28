@@ -2,10 +2,9 @@
 
 ## Motivation
 
-The first NARX network achieved strong teacher-forced offline accuracy but
-failed Simulink closed-loop replay because prediction errors accumulated through
-autoregressive output feedback. The replacement controller uses only measurable
-signals and causal error history.
+Original-data-only controller experiments showed that strong offline imitation
+does not automatically transfer to closed-loop deployment. This replacement
+controller uses only measurable signals and causal error history.
 
 ## Inputs
 

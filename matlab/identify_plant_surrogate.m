@@ -12,7 +12,7 @@ valid = isfinite(y) & isfinite(u);
 y = y(valid);
 u = u(valid);
 
-% Keep temporal order and use the same manageable scale as NARX training.
+% Keep temporal order and use a manageable data scale.
 stride = max(1, floor(numel(y) / cfg.maxSamples));
 y = y(1:stride:end);
 u = u(1:stride:end);
